@@ -29,7 +29,7 @@
 		}
 
 		public function getDynamicIdentifiers() {
-			return array_filter($this->condition->getDynamicIdentifiers(), function ($val) {
+			return array_filter($this->condition->getDynamicOperands(), function ($val) {
 				if (!is_string($val)) {
 					return false;
 				}
@@ -40,8 +40,10 @@
 		}
 
 		// FIXME use pointer here or just return another collection?
-		public function apply(Collection &$collection, $subject) {
-			if ($this->condition->evaluate($subject)) {
+		public function apply(Collection &$collection, array $dynData) {
+			$this->condition->writeOperandCache($dynData);
+
+			if ($this->condition->evaluate()) {
 				$this->action->apply($collection);
 			}
 		}

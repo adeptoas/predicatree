@@ -7,21 +7,28 @@
 		protected $cond;
 
 		public function __construct(array $subject) {
+			parent::__construct($subject);
+
 			$this->cond = Condition::fromSpecifiedArray($subject);
 		}
 
-		public function evaluate(array $dynamicData = []): bool {
-			return !$this->cond->evaluate($dynamicData);
+		public function evaluate(): bool {
+			return !$this->cond->evaluate();
 		}
 
-		public function getDynamicIdentifiers(): array {
-			return $this->cond->getDynamicIdentifiers();
+		protected function op(string $key, $default = null) {
+			return $this->cond->op($key, $default);
 		}
 
-		function jsonSerialize() {
-			return [
-				'operator'	=>	'NOT',
-				'operands'	=>	[ $this->cond ]
-			];
+		public function getDynamicOperands(): array {
+			return $this->cond->getDynamicOperands();
+		}
+
+		public function writeOperandCache(array $dynData) {
+			$this->cond->writeOperandCache($dynData);
+		}
+
+		protected function getCacheSpecification(): array {
+			return Condition::BASE_SPECIFICATION;
 		}
 	}

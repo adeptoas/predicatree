@@ -4,36 +4,28 @@
 	use Adepto\PredicaTree\Predicate\Condition;
 
 	class EqualCondition extends Condition {
-		protected $cmpThis;
-		protected $cmpThat;
-
-		protected $strict;
-
 		public function __construct($cmpThis, $cmpThat, bool $strict = false) {
-			$this->cmpThis = $cmpThis;
-			$this->cmpThat = $cmpThat;
-
-			$this->strict = $strict;
+			parent::__construct([
+				'this'		=>	$cmpThis,
+				'that'		=>	$cmpThat,
+				'strict'	=>	$strict
+			]);
 		}
 
-		public function evaluate(array $dynamicData = []): bool {
-			$cmpThis = $dynamicData['this'] ?? $this->cmpThis;
-			$cmpThat = $dynamicData['that'] ?? $this->cmpThat;
-
-			return $this->strict ? $cmpThis === $cmpThat : $cmpThis == $cmpThat;
-		}
-
-		public function getDynamicIdentifiers(): array {
+		protected function getCacheSpecification(): array {
 			return [
-				'this'	=>	$this->cmpThis,
-				'that'	=>	$this->cmpThat
+				'this'		=>	'any!',
+				'that'		=>	'any!',
+				'strict?'	=>	'bool'
 			];
 		}
 
-		function jsonSerialize() {
-			return [
-				'operator'	=>	'EQUAL',
-				'operands'	=>	array_slice([ $this->cmpThis, $this->cmpThat, $this->strict ], 0, 2 + $this->strict),
-			];
+		public function evaluate(): bool {
+			$cmpThis = $this->op('this');
+			$cmpThat = $this->op('that');
+
+			$strict = $this->op('strict', false);
+
+			return $strict ? $cmpThis === $cmpThat : $cmpThis == $cmpThat;
 		}
 	}
