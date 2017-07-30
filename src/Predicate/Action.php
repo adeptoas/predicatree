@@ -2,6 +2,7 @@
 	namespace Adepto\PredicaTree\Predicate;
 
 	use Adepto\PredicaTree\Collection\Collection;
+	use Adepto\PredicaTree\Predicate\Action\GenericCollectionAction;
 
 	abstract class Action implements \JsonSerializable {
 		public static function fromSpecifiedArray(array $data): Action {

@@ -4,7 +4,7 @@
 	abstract class Condition implements \JsonSerializable {
 		public static function fromSpecifiedArray(array $data): Condition {
 			$operator = $data['operator'];
-			$class = __NAMESPACE__ . '\\' . ucfirst(strtolower($operator)) . 'Condition';
+			$class = __NAMESPACE__ . '\\Condition\\' . ucfirst(strtolower($operator)) . 'Condition';
 
 			$args = $data['operands'];
 

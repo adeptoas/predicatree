@@ -1,7 +1,8 @@
 <?php
-	namespace Adepto\PredicaTree\Predicate;
+	namespace Adepto\PredicaTree\Predicate\Action;
 
 	use Adepto\PredicaTree\Collection\Collection;
+	use Adepto\PredicaTree\Predicate\Action;
 
 	class GenericCollectionAction extends Action {
 		protected $methodName;

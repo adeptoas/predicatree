@@ -1,5 +1,7 @@
 <?php
-	namespace Adepto\PredicaTree\Predicate;
+	namespace Adepto\PredicaTree\Predicate\Condition;
+
+	use Adepto\PredicaTree\Predicate\Condition;
 
 	class EqualCondition extends Condition {
 		protected $cmpThis;

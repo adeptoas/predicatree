@@ -1,5 +1,7 @@
 <?php
-	namespace Adepto\PredicaTree\Predicate;
+	namespace Adepto\PredicaTree\Predicate\Condition;
+
+	use Adepto\PredicaTree\Predicate\Condition;
 
 	class NotCondition extends Condition {
 		protected $cond;
