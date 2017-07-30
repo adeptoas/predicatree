@@ -30,6 +30,10 @@
 
 		public function getDynamicIdentifiers() {
 			return array_filter($this->condition->getDynamicIdentifiers(), function ($val) {
+				if (!is_string($val)) {
+					return false;
+				}
+
 				return strpos($val, self::DYN_MARKER_APRIORI) === 0
 					|| strpos($val, self::DYN_MARKER_COLLECTION) === 0;
 			});

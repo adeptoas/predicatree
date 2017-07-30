@@ -33,7 +33,7 @@
 		function jsonSerialize() {
 			return [
 				'operator'	=>	'EQUAL',
-				'operands'	=>	[ $this->cmpThis, $this->cmpThat, $this->strict ],
+				'operands'	=>	array_slice([ $this->cmpThis, $this->cmpThat, $this->strict ], 0, 2 + $this->strict),
 			];
 		}
 	}

@@ -402,7 +402,10 @@
 		// JsonSerializable
 		
 		public function jsonSerialize() {
-			return $this->getAll();
+			return [
+				'type'	=>	str_replace(__NAMESPACE__ . '\\', '', get_class($this)),
+				'items'	=>	$this->getAll()
+			];
 		}
 
 		// static helpers
