@@ -78,6 +78,12 @@ Currently features operands:
 Currently features methods:
 - Everything listed as public in `Collection` class
 
+Apriori stuff can be accessed by prefixing an argument with `::`.
+Nested array access can be realised by infixing the same `::` in between keys.
+
+Collection contents can be accessed _during sort_ by prefixing an argument with `__`.
+The stuff after that specifies the _exact_ key under which the collection will be accessed.
+
 ## Examples
 
 Examples will be added to the `Examples/` directory once I come up with meaningful examples that don't involve confidential data from my dayjob.
