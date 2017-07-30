@@ -1,0 +1,41 @@
+{
+  "name": "adeptoas/predicatree",
+  "type": "library",
+  "description": "A tool for predicate-based collection sorting",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Gregor Billing",
+      "email": "gb@adepto.as",
+      "homepage": "http://suushiemaniac.com"
+    }
+  ],
+  "version": "1.0",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/adeptoas/fancy-functions"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "adeptoas/sniff-array": "^1.5",
+    "adeptoas/fancy": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.0",
+    "squizlabs/php_codesniffer": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Adepto\\PredicaTree\\": "src"
+    }
+  },
+  "scripts": {
+    "test": [
+      "@phpunit"
+    ],
+    "phpunit": "php vendor/bin/phpunit",
+    "phpcs": "php vendor/bin/phpcs"
+  }
+}
