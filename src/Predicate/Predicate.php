@@ -5,7 +5,7 @@
 
 	class Predicate implements \JsonSerializable {
 		const DYN_MARKER_APRIORI = '::';
-		const DYN_MARKER_COLLECTION = '__';
+		const DYN_MARKER_COLLECTION = '__'; // TODO differentiate between dynamic and static collection in sortProgram
 
 		public static function buildList(array $allPredicateData): array {
 			return array_map(function (array $predicateSpec) {

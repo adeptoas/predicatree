@@ -3,10 +3,10 @@
 
 	use Adepto\SniffArray\Sniff\ArraySniffer;
 
-	abstract class Condition implements \JsonSerializable {
+	abstract class Condition implements \JsonSerializable { // TODO higher order functions (that take conds as arguments themselves)
 		const BASE_SPECIFICATION = [
 			'operator'	=>	'string',
-			'operands'	=>	'array' // TODO all sequential
+			'operands'	=>	'array::seq'
 		];
 
 		public static function fromSpecifiedArray(array $data): Condition {

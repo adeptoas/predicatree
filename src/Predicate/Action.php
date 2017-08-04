@@ -4,7 +4,7 @@
 	use Adepto\PredicaTree\Collection\Collection;
 	use Adepto\PredicaTree\Predicate\Action\GenericCollectionAction;
 
-	abstract class Action implements \JsonSerializable {
+	abstract class Action implements \JsonSerializable { // TODO "eval" action (nested conditions)
 		public static function fromSpecifiedArray(array $data): Action {
 			$method = $data['method'];
 			$args = $data['arguments'];
