@@ -49,15 +49,27 @@
 
 		public function getCollectionData($key = null) {
 			if (is_null($key)) {
-				return $this->collection;
+				return $this->collection->getAll();
 			}
 
 			return $this->collection->get($key);
 		}
 
-		public function getDynamicData(string $key) {
-			$prefix = substr($key, 0, 2);
-			$dataKey = substr($key, 2);
+		public function getDynamicData($val, bool $forceFlat = false) {
+			if (!$forceFlat && is_array($val)) {
+				$assoc = FancyArray::isAssociative($val);
+
+				return array_map(function ($nestedVal) use ($assoc) {
+					return $this->getDynamicData($nestedVal, $assoc);
+				}, $val);
+			}
+
+			if (!is_string($val)) {
+				return $val;
+			}
+
+			$prefix = substr($val, 0, 2);
+			$dataKey = substr($val, 2) ?: null;
 
 			if ($prefix == Predicate::DYN_MARKER_APRIORI) {
 				return $this->getAprioriData($dataKey);
@@ -65,7 +77,7 @@
 				return $this->getCollectionData($dataKey);
 			}
 
-			return null;
+			return $val;
 		}
 
 		public function sort(): Collection {
@@ -73,7 +85,7 @@
 
 			/** @var $predicate Predicate */
 			foreach ($this->predicates as $predicate) {
-				$identifiers = $predicate->getDynamicIdentifiers();
+				$identifiers = $predicate->getConditionOperands();
 				$dynamic = array_map([$this, 'getDynamicData'], $identifiers);
 
 				$predicate->apply($applCollection, $dynamic);

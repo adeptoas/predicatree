@@ -28,15 +28,12 @@
 			$this->action = $action;
 		}
 
-		public function getDynamicIdentifiers() {
-			return array_filter($this->condition->getDynamicOperands(), function ($val) {
-				if (!is_string($val)) {
-					return false;
-				}
+		public function getConditionOperands(): array {
+			return $this->condition->getDynamicOperands();
+		}
 
-				return strpos($val, self::DYN_MARKER_APRIORI) === 0
-					|| strpos($val, self::DYN_MARKER_COLLECTION) === 0;
-			});
+		public function getActionOperands(): array {
+			return []; // TODO suushie
 		}
 
 		// FIXME use pointer here or just return another collection?
