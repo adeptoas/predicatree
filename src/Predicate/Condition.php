@@ -1,17 +1,18 @@
 <?php
 	namespace Adepto\PredicaTree\Predicate;
 
+	use Adepto\Fancy\FancyString;
 	use Adepto\SniffArray\Sniff\ArraySniffer;
 
-	abstract class Condition implements \JsonSerializable { // TODO higher order functions (that take conds as arguments themselves)
+	abstract class Condition implements \JsonSerializable {
 		const BASE_SPECIFICATION = [
 			'operator'	=>	'string',
 			'operands'	=>	'array::seq'
 		];
 
 		public static function fromSpecifiedArray(array $data): Condition {
-			$operator = $data['operator'];
-			$class = __NAMESPACE__ . '\\Condition\\' . ucfirst(strtolower($operator)) . 'Condition';
+			$operator = strtolower($data['operator']);
+			$class = __NAMESPACE__ . '\\Condition\\' . ucfirst(FancyString::toCamelCase($operator)) . 'Condition';
 
 			$args = $data['operands'];
 
