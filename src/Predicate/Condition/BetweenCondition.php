@@ -18,6 +18,12 @@
 			$lower = $this->op('lower');
 			$upper = $this->op('upper');
 
+			$safety = $lower <=> $upper;
+
+			if ($safety == 1) {
+				list($lower, $upper) = [ $upper, $lower ];
+			}
+
 			$lowerBound = $lower <=> $val;
 			$upperBound = $upper <=> $val;
 
