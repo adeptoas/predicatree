@@ -21,10 +21,10 @@
 		}
 
 		public function evaluate(): bool {
-			$cmpThis = $this->op('this');
-			$cmpThat = $this->op('that');
+			$cmpThis = $this->arg('this');
+			$cmpThat = $this->arg('that');
 
-			$strict = $this->op('strict', false);
+			$strict = $this->arg('strict', false);
 
 			return $strict ? $cmpThis === $cmpThat : $cmpThis == $cmpThat;
 		}

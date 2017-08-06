@@ -2,10 +2,13 @@
 	namespace Adepto\PredicaTree\Predicate\Condition;
 
 	use Adepto\PredicaTree\Predicate\Condition;
+	use Adepto\PredicaTree\Predicate\HigherOrderCacheObject;
 
-	class NotCondition extends HigherOrderCondition {
+	class NotCondition extends Condition {
+		use HigherOrderCacheObject;
+
 		public function evaluate(): bool {
-			if ($cond = $this->nestedConditions[0]) {
+			if ($cond = $this->getChild(0)) {
 				return $cond instanceof Condition && !$cond->evaluate();
 			}
 

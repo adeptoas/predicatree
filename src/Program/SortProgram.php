@@ -6,6 +6,9 @@
 	use Adepto\PredicaTree\Predicate\Predicate;
 
 	class SortProgram implements \JsonSerializable {
+		const DYN_MARKER_APRIORI = '::';
+		const DYN_MARKER_COLLECTION = '__'; // TODO differentiate between dynamic and static collection access
+
 		public static function build(array $data): SortProgram {
 			$apriori = $data['apriori'];
 
@@ -44,7 +47,7 @@
 				return $this->aprioriData;
 			}
 
-			return FancyArray::colonAccess($this->aprioriData, $key, Predicate::DYN_MARKER_APRIORI);
+			return FancyArray::colonAccess($this->aprioriData, $key, self::DYN_MARKER_APRIORI);
 		}
 
 		public function getCollectionData($key = null) {
@@ -71,9 +74,9 @@
 			$prefix = substr($val, 0, 2);
 			$dataKey = substr($val, 2) ?: null;
 
-			if ($prefix == Predicate::DYN_MARKER_APRIORI) {
+			if ($prefix == self::DYN_MARKER_APRIORI) {
 				return $this->getAprioriData($dataKey);
-			} else if ($prefix == Predicate::DYN_MARKER_COLLECTION) {
+			} else if ($prefix == self::DYN_MARKER_COLLECTION) {
 				return $this->getCollectionData($dataKey);
 			}
 
@@ -86,9 +89,12 @@
 			/** @var $predicate Predicate */
 			foreach ($this->predicates as $predicate) {
 				$identifiers = $predicate->getConditionOperands();
-				$dynamic = array_map([$this, 'getDynamicData'], $identifiers);
 
-				$predicate->apply($applCollection, $dynamic);
+				$dynamic = array_map([$this, 'getDynamicData'], $identifiers);
+				$predicate->writeConditionCache($dynamic);
+
+				// TODO write back action arg cache
+				$predicate->apply($applCollection);
 			}
 
 			return $applCollection;

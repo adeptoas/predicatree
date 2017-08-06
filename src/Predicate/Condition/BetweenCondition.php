@@ -13,10 +13,10 @@
 		}
 
 		public function evaluate(): bool {
-			$val = $this->op('val');
+			$val = $this->arg('val');
 
-			$lower = $this->op('lower');
-			$upper = $this->op('upper');
+			$lower = $this->arg('lower');
+			$upper = $this->arg('upper');
 
 			$safety = $lower <=> $upper;
 

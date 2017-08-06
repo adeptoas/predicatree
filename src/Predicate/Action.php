@@ -1,23 +1,57 @@
 <?php
 	namespace Adepto\PredicaTree\Predicate;
 
-	use Adepto\PredicaTree\Collection\Collection;
-	use Adepto\PredicaTree\Predicate\Action\GenericCollectionAction;
+	use Adepto\Fancy\FancyString;
 
-	abstract class Action implements \JsonSerializable { // TODO "eval" action (nested conditions)
+	abstract class Action extends CacheObject {
+		const METHOD_DEFAULT = '__std';
+
+		const BASE_SPECIFICATION = [
+			'action'	=>	'string!',
+			'arguments'	=>	'array::seq',
+			'method?'	=>	'string!'
+		];
+
 		public static function fromSpecifiedArray(array $data): Action {
-			$method = $data['method'];
+			$action = strtolower($data['action']);
+			$class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action';
+
 			$args = $data['arguments'];
 
-			return new GenericCollectionAction($method, $args); // FIXME this is only preliminary
+			/** @var $actionObj Action */
+			$actionObj = new $class(...$args);
+
+			if ($method = $data['method']) {
+				$actionObj->setMethod($method);
+			}
+
+			return $actionObj;
 		}
 
-		protected $arguments;
+		protected $method;
 
-		public function __construct(array $arguments = []) {
-			$this->arguments = $arguments;
+		public function __construct(array $assocArguments) {
+			parent::__construct($assocArguments);
+
+			$this->method = static::METHOD_DEFAULT;
 		}
 
-		// FIXME same question as above: pointer or return copy?
-		public abstract function apply(Collection &$collection);
+		public function setMethod(string $method) {
+			$this->method = $method;
+		}
+
+		public function getMethod(): string {
+			return $this->method;
+		}
+
+		// FIXME pointer or return copy?
+		public abstract function apply(&...$subject);
+
+		public function jsonSerialize() {
+			return array_merge(array_filter([
+				'method'	=>	$this->getMethod()
+			], function (string $method) {
+				return $method !== self::METHOD_DEFAULT;
+			}), parent::jsonSerialize());
+		}
 	}

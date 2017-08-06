@@ -3,8 +3,8 @@
 
 	class StrContainsCondition extends StringCondition {
 		public function evaluate(): bool {
-			$needle = $this->op('needle');
-			$haystack = $this->op('haystack');
+			$needle = $this->arg('needle');
+			$haystack = $this->arg('haystack');
 
 			return strpos($haystack, $needle) !== false;
 		}

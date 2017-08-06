@@ -13,10 +13,10 @@
 		}
 
 		public function evaluate(): bool {
-			$needle = $this->op('needle');
-			$haystack = $this->op('haystack');
+			$needle = $this->arg('needle');
+			$haystack = $this->arg('haystack');
 
-			$strict = $this->op('strict', false);
+			$strict = $this->arg('strict', false);
 
 			return in_array($needle, $haystack, $strict);
 		}
