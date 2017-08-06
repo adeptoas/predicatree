@@ -20,6 +20,13 @@
 			}
 		}
 
+		protected function getPositionalArguments(): array {
+			$std = parent::getPositionalArguments();
+			$head = array_shift($std);
+
+			return array_values(array_merge([ $head ], ...$std));
+		}
+
 		protected function getCacheSpecification(): array {
 			$refl = new \ReflectionClass(Collection::class);
 			$reflMethod = $refl->getMethod($this->arg('method'));

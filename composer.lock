@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "adeptoas/fancy",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "git@github.com:adeptoas/fancy-functions.git",
-                "reference": "587058841f1cef678fecfafe40279fd1d0cbb813"
+                "reference": "7ccae68aa38bc7fce8221d9d3d7e2417cd16c6dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adeptoas/fancy-functions/zipball/587058841f1cef678fecfafe40279fd1d0cbb813",
-                "reference": "587058841f1cef678fecfafe40279fd1d0cbb813",
+                "url": "https://api.github.com/repos/adeptoas/fancy-functions/zipball/7ccae68aa38bc7fce8221d9d3d7e2417cd16c6dc",
+                "reference": "7ccae68aa38bc7fce8221d9d3d7e2417cd16c6dc",
                 "shasum": ""
             },
             "require": {
@@ -51,10 +51,10 @@
             ],
             "description": "Fancy Functions Collection",
             "support": {
-                "source": "https://github.com/adeptoas/fancy-functions/tree/v1.0.3",
+                "source": "https://github.com/adeptoas/fancy-functions/tree/v1.0.4",
                 "issues": "https://github.com/adeptoas/fancy-functions/issues"
             },
-            "time": "2017-05-12 17:32:35"
+            "time": "2017-08-06 12:00:31"
         },
         {
             "name": "adeptoas/sniff-array",

@@ -29,7 +29,7 @@
 		}
 
 		protected function getPositionalArguments(): array {
-			return $this->getDynamicArguments();
+			return array_values($this->getDynamicArguments());
 		}
 
 		public function writeArgumentCache(array $dynData) {

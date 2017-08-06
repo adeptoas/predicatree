@@ -19,5 +19,6 @@
 		}
 
 		// FIXME pointer or return copy?
+		// TODO subject specification checking?
 		public abstract function apply(&...$subject);
 	}
