@@ -25,7 +25,7 @@
 			$this->predicate->writeFullDynamicCache($dynData);
 		}
 
-		protected function getPositionalArguments(): array {
+		public function getPositionalArguments(): array {
 			return [ $this->predicate ];
 		}
 

@@ -20,7 +20,7 @@
 			}
 		}
 
-		protected function getPositionalArguments(): array {
+		public function getPositionalArguments(): array {
 			$std = parent::getPositionalArguments();
 			$head = array_shift($std);
 

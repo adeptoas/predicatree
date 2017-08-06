@@ -34,7 +34,7 @@
 			return count($this->getChildren());
 		}
 
-		protected function getPositionalArguments(): array {
+		public function getPositionalArguments(): array {
 			return $this->getChildren();
 		}
 

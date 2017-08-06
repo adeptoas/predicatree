@@ -7,11 +7,17 @@
 		const DYN_MARKER_APRIORI = '::';
 		const DYN_MARKER_SUBJECT = '__';
 
+		const DYN_MARKERS = [
+			self::DYN_MARKER_APRIORI,
+			self::DYN_MARKER_SUBJECT
+		];
+
 		protected $subject;
 		protected $predicates;
 
 		protected $aprioriData;
 
+		protected $memory;
 		protected $hasRun;
 
 		public function __construct($subject, array $predicates, array $aprioriData = []) {
@@ -20,6 +26,7 @@
 
 			$this->aprioriData = $aprioriData;
 
+			$this->memory = clone $subject;
 			$this->hasRun = false;
 		}
 
@@ -37,6 +44,10 @@
 			}
 
 			return FancyArray::colonAccess($this->aprioriData, $key, self::DYN_MARKER_APRIORI);
+		}
+
+		public function getSubject() {
+			return $this->subject;
 		}
 
 		protected function getDynamicData($val) {
@@ -62,7 +73,8 @@
 			}
 
 			if (strpos($val, '\\') === 0) {
-				$val = preg_replace('/^\\\\(' . preg_quote(self::DYN_MARKER_APRIORI) . '|' . preg_quote(self::DYN_MARKER_APRIORI) . ')/', '$1', $val);
+				$markers = implode('|', array_map('preg_quote', self::DYN_MARKERS));
+				$val = preg_replace('/^\\\\(' . $markers . ')/', '$1', $val);
 			}
 
 			return $val;
@@ -76,6 +88,7 @@
 		}
 
 		public function rewind() {
+			$this->subject = clone $this->memory;
 			$this->hasRun = false;
 		}
 

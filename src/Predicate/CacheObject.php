@@ -28,7 +28,7 @@
 			return $this->arguments;
 		}
 
-		protected function getPositionalArguments(): array {
+		public function getPositionalArguments(): array {
 			return array_values($this->getDynamicArguments());
 		}
 
@@ -38,7 +38,8 @@
 
 		public function jsonSerialize() {
 			$baseName = str_replace(__NAMESPACE__ . '\\', '', get_class($this));
-			$baseName = array_pop(explode('\\', $baseName));
+			$baseNameParts = explode('\\', $baseName);
+			$baseName = array_pop($baseNameParts);
 
 			$snake = FancyString::toSnakeCase($baseName);
 			$snakeParts = explode('_', $snake);
