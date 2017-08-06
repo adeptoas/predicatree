@@ -9,19 +9,18 @@
 		protected $argCache;
 
 		protected function __construct(array $assocArguments) {
-			if (ArraySniffer::arrayConformsTo($this->getCacheSpecification(), $assocArguments, true)) {
-				$this->arguments = $assocArguments;
-				$this->argCache = $assocArguments;
-			}
+			$this->arguments = $assocArguments;
+			$this->argCache = $assocArguments;
+
+			# check that everything is okay after fields have been initialized
+			# because some specification builders rely on the "assocArguments" already
+			$sniffer = new ArraySniffer($this->getCacheSpecification(), true);
+			$sniffer->sniff($assocArguments);
 		}
 
 		protected abstract function getCacheSpecification(): array;
 
-		protected function arg(string $key = null, $default = null) {
-			if (is_null($key)) {
-				return $this->argCache;
-			}
-
+		protected function arg(string $key, $default = null) {
 			return $this->argCache[$key] ?? $default; // TODO what if the cache completely fails (ie EqualCond null == null)
 		}
 
