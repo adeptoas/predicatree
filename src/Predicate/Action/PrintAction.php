@@ -4,19 +4,24 @@
 	use Adepto\PredicaTree\Predicate\Action;
 
 	class PrintAction extends Action {
-		public function __construct(string $line) {
+		public function __construct($line, bool $json = false) {
 			parent::__construct([
-				'line'	=>	$line
+				'line'	=>	$line,
+				'json'	=>	$json
 			]);
 		}
 
 		public function apply(&...$subject) {
-			echo $this->arg('line') . PHP_EOL;
+			$json = $this->arg('json', false);
+			$line = $this->arg('line');
+
+			echo ($json ? json_encode($line, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $line) . PHP_EOL;
 		}
 
 		protected function getCacheSpecification(): array {
 			return [
-				'line'	=>	'string'
+				'line'	=>	'any',
+				'json?'	=>	'bool'
 			];
 		}
 	}

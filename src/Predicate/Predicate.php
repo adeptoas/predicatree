@@ -28,7 +28,7 @@
 			$this->action = $action;
 		}
 
-		public function getConditionOperands(): array {
+		public function getConditionArguments(): array {
 			return $this->condition->getDynamicArguments();
 		}
 
@@ -42,6 +42,20 @@
 
 		public function writeActionCache(array $dynData) {
 			$this->action->writeArgumentCache($dynData);
+		}
+
+		public function getFullDynamicArguments(): array {
+			return [
+				$this->getConditionArguments(),
+				$this->getActionArguments()
+			];
+		}
+
+		public function writeFullDynamicCache(array $dynData) {
+			list($condCache, $actionCache) = $dynData;
+
+			$this->writeConditionCache($condCache);
+			$this->writeActionCache($actionCache);
 		}
 
 		// FIXME use pointer here or just return another object copy?

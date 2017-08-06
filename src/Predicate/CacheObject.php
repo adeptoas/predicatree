@@ -28,21 +28,26 @@
 			return $this->arguments;
 		}
 
+		protected function getPositionalArguments(): array {
+			return $this->getDynamicArguments();
+		}
+
 		public function writeArgumentCache(array $dynData) {
 			$this->argCache = array_merge($this->arguments, $dynData);
 		}
 
 		public function jsonSerialize() {
 			$baseName = str_replace(__NAMESPACE__ . '\\', '', get_class($this));
+			$baseName = array_pop(explode('\\', $baseName));
 
 			$snake = FancyString::toSnakeCase($baseName);
 			$snakeParts = explode('_', $snake);
 
-			$tail = array_pop($snakeParts);
+			$tail = strtolower(array_pop($snakeParts));
 
 			return [
 				$tail		=>	implode('-', array_map('strtoupper', $snakeParts)),
-				'arguments'	=>	$this->getDynamicArguments()
+				'arguments'	=>	$this->getPositionalArguments()
 			];
 		}
 	}

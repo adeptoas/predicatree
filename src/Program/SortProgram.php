@@ -58,13 +58,9 @@
 			return $this->collection->get($key);
 		}
 
-		public function getDynamicData($val, bool $forceFlat = false) {
-			if (!$forceFlat && is_array($val)) {
-				$assoc = FancyArray::isAssociative($val);
-
-				return array_map(function ($nestedVal) use ($assoc) {
-					return $this->getDynamicData($nestedVal, $assoc);
-				}, $val);
+		public function getDynamicData($val) {
+			if (is_array($val)) {
+				return array_map([$this, 'getDynamicData'], $val);
 			}
 
 			if (!is_string($val)) {
@@ -72,12 +68,20 @@
 			}
 
 			$prefix = substr($val, 0, 2);
-			$dataKey = substr($val, 2) ?: null;
+			$dataKey = substr($val, 2);
+
+			if (strlen($dataKey) == 0) {
+				$dataKey = null;
+			}
 
 			if ($prefix == self::DYN_MARKER_APRIORI) {
 				return $this->getAprioriData($dataKey);
 			} else if ($prefix == self::DYN_MARKER_COLLECTION) {
 				return $this->getCollectionData($dataKey);
+			}
+
+			if (strpos($val, '\\') === 0) {
+				$val = preg_replace('/^\\\\(::|__)/', '$1', $val);
 			}
 
 			return $val;
@@ -88,12 +92,10 @@
 
 			/** @var $predicate Predicate */
 			foreach ($this->predicates as $predicate) {
-				$identifiers = $predicate->getConditionOperands();
-
+				$identifiers = $predicate->getFullDynamicArguments();
 				$dynamic = array_map([$this, 'getDynamicData'], $identifiers);
-				$predicate->writeConditionCache($dynamic);
+				$predicate->writeFullDynamicCache($dynamic);
 
-				// TODO write back action arg cache
 				$predicate->apply($applCollection);
 			}
 

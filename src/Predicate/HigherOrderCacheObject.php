@@ -11,13 +11,13 @@
 		}
 
 		public function getDynamicArguments(): array {
-			return array_map(function (Condition $cond) {
+			return array_map(function (CacheObject $cond) {
 				return $cond->getDynamicArguments();
 			}, $this->nestedCaches);
 		}
 
 		public function writeArgumentCache(array $dynData) {
-			array_map(function (Condition $cond, array $cache) {
+			array_map(function (CacheObject $cond, array $cache) {
 				$cond->writeArgumentCache($cache);
 			}, $this->nestedCaches, $dynData);
 		}
@@ -32,6 +32,10 @@
 
 		protected function getChildCount(): int {
 			return count($this->getChildren());
+		}
+
+		protected function getPositionalArguments(): array {
+			return $this->getChildren();
 		}
 
 		protected function getCacheSpecification(): array {

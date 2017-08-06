@@ -18,15 +18,15 @@
 		}
 
 		public function getDynamicArguments(): array {
-			return [
-				'condition'	=>	$this->predicate->getConditionOperands(),
-				'action'	=>	$this->predicate->getActionArguments()
-			];
+			return $this->predicate->getFullDynamicArguments();
 		}
 
 		public function writeArgumentCache(array $dynData) {
-			$this->predicate->writeConditionCache($dynData['condition']);
-			$this->predicate->writeActionCache($dynData['action']);
+			$this->predicate->writeFullDynamicCache($dynData);
+		}
+
+		protected function getPositionalArguments(): array {
+			return [ $this->predicate ];
 		}
 
 		protected function getCacheSpecification(): array {
