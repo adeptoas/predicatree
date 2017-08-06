@@ -1,9 +1,12 @@
 <?php
 	namespace Adepto\PredicaTree\Predicate;
 
-	use Adepto\PredicaTree\Collection\Collection;
-
 	class Predicate implements \JsonSerializable {
+		const BASE_SPECIFICATION = [
+			'if'	=>	Condition::BASE_SPECIFICATION,
+			'then'	=>	Action::BASE_SPECIFICATION
+		];
+
 		public static function buildList(array $allPredicateData): array {
 			return array_map(function (array $predicateSpec) {
 				return self::fromSpecifiedArray($predicateSpec);
@@ -42,9 +45,9 @@
 		}
 
 		// FIXME use pointer here or just return another object copy?
-		public function apply(Collection &$collection) {
+		public function apply(&...$subject) {
 			if ($this->condition->evaluate()) {
-				$this->action->apply($collection);
+				$this->action->apply(...$subject);
 			}
 		}
 

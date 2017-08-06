@@ -5,15 +5,15 @@
 
 	abstract class Condition extends CacheObject {
 		const BASE_SPECIFICATION = [
-			'operator'	=>	'string!',
-			'operands'	=>	'array::seq'
+			'condition'	=>	'string!',
+			'arguments'	=>	'array::seq'
 		];
 
 		public static function fromSpecifiedArray(array $data): Condition {
-			$operator = strtolower($data['operator']);
+			$operator = strtolower($data['condition']);
 			$class = __NAMESPACE__ . '\\Condition\\' . ucfirst(FancyString::toCamelCase($operator)) . 'Condition';
 
-			$args = $data['operands'];
+			$args = $data['arguments'];
 
 			return new $class(...$args); // TODO use proper mapping instead of hacking class names
 		}
