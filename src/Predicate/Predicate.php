@@ -4,7 +4,8 @@
 	class Predicate implements \JsonSerializable {
 		const BASE_SPECIFICATION = [
 			'if'	=>	Condition::BASE_SPECIFICATION,
-			'then'	=>	Action::BASE_SPECIFICATION
+			'then'	=>	Action::BASE_SPECIFICATION,
+			'else?'	=>	Action::BASE_SPECIFICATION
 		];
 
 		public static function buildList(array $allPredicateData): array {
@@ -17,15 +18,25 @@
 			$condition = Condition::fromSpecifiedArray($predicateData['if']);
 			$action = Action::fromSpecifiedArray($predicateData['then']);
 
-			return new self($condition, $action); // TODO use cache for equal objects?
+			if ($altAction = $predicateData['else'] ?? null) {
+				$elseAction = Action::fromSpecifiedArray($altAction);
+			} else {
+				$elseAction = null;
+			}
+
+			return new self($condition, $action, $elseAction); // TODO use cache for equal objects?
 		}
 
 		protected $condition;
-		protected $action;
 
-		public function __construct(Condition $condition, Action $action) {
+		protected $action;
+		protected $elseAction;
+
+		public function __construct(Condition $condition, Action $action, Action $elseAction = null) {
 			$this->condition = $condition;
+
 			$this->action = $action;
+			$this->elseAction = $elseAction;
 		}
 
 		public function getConditionArguments(): array {
@@ -44,31 +55,50 @@
 			$this->action->writeArgumentCache($dynData);
 		}
 
+		public function getElseActionArguments(): array {
+			if (is_null($this->elseAction)) {
+				return [];
+			}
+
+			return $this->elseAction->getDynamicArguments();
+		}
+
+		public function writeElseActionCache(array $dynData) {
+			if (!is_null($this->elseAction)) {
+				$this->elseAction->writeArgumentCache($dynData);
+			}
+		}
+
 		public function getFullDynamicArguments(): array {
 			return [
 				$this->getConditionArguments(),
-				$this->getActionArguments()
+				$this->getActionArguments(),
+				$this->getElseActionArguments()
 			];
 		}
 
 		public function writeFullDynamicCache(array $dynData) {
-			list($condCache, $actionCache) = $dynData;
+			list($condCache, $actionCache, $elseActionCache) = $dynData;
 
 			$this->writeConditionCache($condCache);
 			$this->writeActionCache($actionCache);
+			$this->writeElseActionCache($elseActionCache);
 		}
 
 		// FIXME use pointer here or just return another object copy?
 		public function apply(&...$subject) {
 			if ($this->condition->evaluate()) {
 				$this->action->apply(...$subject);
+			} else if ($this->elseAction instanceof Action) {
+				$this->elseAction->apply(...$subject);
 			}
 		}
 
 		function jsonSerialize() {
-			return [
+			return array_filter([
 				'if'	=>	$this->condition,
-				'then'	=>	$this->action
-			];
+				'then'	=>	$this->action,
+				'else'	=>	$this->elseAction
+			]);
 		}
 	}
