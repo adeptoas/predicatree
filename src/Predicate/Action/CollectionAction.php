@@ -22,9 +22,7 @@
 
 		public function getPositionalArguments(): array {
 			$std = parent::getPositionalArguments();
-			$head = array_shift($std);
-
-			return array_values(array_merge([ $head ], ...$std));
+			return array_values(array_merge([ $std[0] ], $std[1]));
 		}
 
 		protected function getCacheSpecification(): array {

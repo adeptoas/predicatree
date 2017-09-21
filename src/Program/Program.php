@@ -2,6 +2,7 @@
 	namespace Adepto\PredicaTree\Program;
 
 	use Adepto\Fancy\FancyArray;
+	use Adepto\PredicaTree\Predicate\Predicate;
 
 	abstract class Program implements \JsonSerializable {
 		const DYN_MARKER_APRIORI = '::';
@@ -26,7 +27,7 @@
 
 			$this->aprioriData = $aprioriData;
 
-			$this->memory = clone $subject;
+			$this->memory = self::cloneAny($subject);
 			$this->hasRun = false;
 		}
 
@@ -69,7 +70,7 @@
 			if ($prefix == self::DYN_MARKER_APRIORI) {
 				return $this->getAprioriData($dataKey);
 			} else if ($prefix == self::DYN_MARKER_SUBJECT) {
-				return $this->getSubjectData($dataKey);
+				return $this->accessSubjectData($dataKey);
 			}
 
 			if (strpos($val, '\\') === 0) {
@@ -80,6 +81,17 @@
 			return $val;
 		}
 
+		protected function execute() {
+			/** @var $predicate Predicate */
+			foreach ($this->predicates as $predicate) {
+				$identifiers = $predicate->getFullDynamicArguments();
+				$dynamic = array_map([$this, 'getDynamicData'], $identifiers);
+				$predicate->writeFullDynamicCache($dynamic);
+
+				$predicate->apply($this->subject);
+			}
+		}
+
 		public function run() {
 			if (!$this->hasRun) {
 				$this->execute();
@@ -88,7 +100,7 @@
 		}
 
 		public function rewind() {
-			$this->subject = clone $this->memory;
+			$this->subject = self::cloneAny($this->memory);
 			$this->hasRun = false;
 		}
 
@@ -97,18 +109,35 @@
 				$this->run();
 			}
 
-			return $this->subject;
+			return $this->getFinalSubjectData();
 		}
 
-		public abstract function getSubjectData($key = null);
+		// Hooks for subclasses
 
-		protected abstract function execute();
+		protected function getFinalSubjectData() {
+			return $this->getSubject();
+		}
+
+		protected function getSerializableSubjectData() {
+			return $this->getSubject();
+		}
+
+		public abstract function accessSubjectData($key = null);
 
 		public function jsonSerialize() {
-			return [
+			return array_filter([
 				'apriori'		=>	$this->getAprioriData(),
-				'subject'		=>	$this->getSubjectData(),
+				'subject'		=>	$this->getSerializableSubjectData(),
 				'predicates'	=>	$this->getPredicates()
-			];
+			]);
+		}
+
+		protected static function cloneAny($obj) {
+			if (is_object($obj)) {
+				return clone $obj;
+			} else {
+				$clone = $obj;
+				return $clone;
+			}
 		}
 	}
