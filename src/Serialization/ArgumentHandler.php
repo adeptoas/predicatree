@@ -1,5 +1,7 @@
 <?php
 
+	namespace Adepto\PredicaTree\Serialization;
+
 	use Adepto\PredicaTree\Predicate\Predicate;
 	use Adepto\PredicaTree\Program\Program;
 
