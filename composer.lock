@@ -58,16 +58,16 @@
         },
         {
             "name": "adeptoas/sniff-array",
-            "version": "1.6.6",
+            "version": "1.6.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adeptoas/sniff-array.git",
-                "reference": "38e21f3887bbcf9ba0f03d27d0eaa2826c38e25f"
+                "reference": "c616a72507af6cb962341d06e521bc47346a4dc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adeptoas/sniff-array/zipball/38e21f3887bbcf9ba0f03d27d0eaa2826c38e25f",
-                "reference": "38e21f3887bbcf9ba0f03d27d0eaa2826c38e25f",
+                "url": "https://api.github.com/repos/adeptoas/sniff-array/zipball/c616a72507af6cb962341d06e521bc47346a4dc1",
+                "reference": "c616a72507af6cb962341d06e521bc47346a4dc1",
                 "shasum": ""
             },
             "require": {
@@ -95,7 +95,7 @@
                 }
             ],
             "description": "A tool for checking array specification conformity",
-            "time": "2017-08-07 12:12:55"
+            "time": "2017-09-21 11:41:58"
         },
         {
             "name": "danielstjules/stringy",
