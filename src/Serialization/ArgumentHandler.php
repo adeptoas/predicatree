@@ -24,11 +24,7 @@
 			/** @var $predicate Predicate */
 			foreach ($program->getPredicates() as $predicate) {
 				$predicate->writeFullDynamicCache(array_map(function (array $dynArgs, bool $map) {
-					if ($map) {
-						return $this->handleArgs($dynArgs);
-					}
-
-					return $dynArgs;
+					return $map ? $this->handleArgs($dynArgs) : $dynArgs;
 				}, $predicate->getFullDynamicArguments(), [
 					$this->applyIf,
 					$this->applyThen,
