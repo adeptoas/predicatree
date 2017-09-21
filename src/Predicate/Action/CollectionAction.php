@@ -12,11 +12,10 @@
 			]);
 		}
 
-		public function apply(&...$subject) {
-			$coll = $subject[0];
-
-			if ($coll instanceof Collection) {
-				$coll->{$this->arg('method')}(...$this->arg('arguments'));
+		public function apply(&$subject) {
+			if ($subject instanceof Collection) {
+				// FIXME prevent injection
+				$subject->{$this->arg('method')}(...$this->arg('arguments'));
 			}
 		}
 

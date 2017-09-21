@@ -7,10 +7,10 @@
 	class ChainAction extends Action {
 		use HigherOrderCacheObject;
 
-		public function apply(&...$subject) {
+		public function apply(&$subject) {
 			/** @var $child Action */
 			foreach ($this->getChildren() as $child) {
-				$child->apply(...$subject);
+				$child->apply($subject);
 			}
 		}
 	}

@@ -11,12 +11,10 @@
 			]);
 		}
 
-		public function apply(&...$subject) {
-			$arr = &$subject[0];
-
-			if (is_array($arr) && !$arr[DecisionProgram::KEY_HAS_RETURNED]) {
-				$arr[DecisionProgram::KEY_HAS_RETURNED] = true;
-				$arr[DecisionProgram::KEY_RETURN_RESULT] = $this->arg('return');
+		public function apply(&$subject) {
+			if (is_array($subject) && !$subject[DecisionProgram::KEY_HAS_RETURNED]) {
+				$subject[DecisionProgram::KEY_HAS_RETURNED] = true;
+				$subject[DecisionProgram::KEY_RETURN_RESULT] = $this->arg('return');
 			}
 		}
 

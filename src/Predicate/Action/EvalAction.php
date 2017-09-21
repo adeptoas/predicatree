@@ -13,8 +13,8 @@
 			$this->predicate = Predicate::fromSpecifiedArray($predicateData);
 		}
 
-		public function apply(&...$subject) {
-			$this->predicate->apply(...$subject);
+		public function apply(&$subject) {
+			$this->predicate->apply($subject);
 		}
 
 		public function getDynamicArguments(): array {

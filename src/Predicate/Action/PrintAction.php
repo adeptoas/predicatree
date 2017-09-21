@@ -11,7 +11,7 @@
 			]);
 		}
 
-		public function apply(&...$subject) {
+		public function apply(&$subject) {
 			$json = $this->arg('json', false);
 			$line = $this->arg('line');
 
