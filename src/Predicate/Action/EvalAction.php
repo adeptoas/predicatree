@@ -30,6 +30,10 @@
 		}
 
 		protected function getCacheSpecification(): array {
+			if ($this->arg('switch')) {
+				return Predicate::SWITCH_SPECIFICATION;
+			}
+
 			return Predicate::BASE_SPECIFICATION;
 		}
 	}

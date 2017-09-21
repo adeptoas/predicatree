@@ -14,7 +14,7 @@
 
 			# check that everything is okay after fields have been initialized
 			# because some specification builders rely on the "assocArguments" already
-			$sniffer = new ArraySniffer($this->getCacheSpecification(), true); // FIXME EvalAction can have multiple specifications (switch…)
+			$sniffer = new ArraySniffer($this->getCacheSpecification(), true);
 			$sniffer->sniff($assocArguments);
 		}
 
