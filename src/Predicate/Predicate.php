@@ -12,15 +12,18 @@
 
 		const SWITCH_SPECIFICATION = [
 			'switch'	=>	[
-				'value'		=>	'any',
-				'case'		=>	'array::assoc',
-				'default?'	=>	Action::BASE_SPECIFICATION
-			]
+				'value'								=>	'any',
+				'case+'								=>	Action::BASE_SPECIFICATION,
+				'default?'							=>	Action::BASE_SPECIFICATION,
+			],
+			self::SWITCH_CASE_DELIMITER . '?'	=>	'string!'
 		];
 
 		const SWITCH_DETECTION_DEFAULT = 3;
+		const SWITCH_CASE_DELIMITER = 'case-delimiter';
 
-		protected static $switchDetection = self::SWITCH_DETECTION_DEFAULT;
+		protected static $switchDepth = self::SWITCH_DETECTION_DEFAULT;
+		protected static $switchDetectionEnabled = true;
 
 		public static function buildList(array $allPredicateData): array {
 			return array_map(function (array $predicateSpec) {
@@ -104,32 +107,50 @@
 		}
 
 		// FIXME use pointer here or just return another object copy?
-		public function apply(&...$subject) {
+		public function apply(&$subject) {
 			if ($this->condition->evaluate()) {
-				$this->action->apply(...$subject);
+				$this->action->apply($subject);
 			} else if ($this->elseAction instanceof Action) {
-				$this->elseAction->apply(...$subject);
+				$this->elseAction->apply($subject);
 			}
 		}
 
 		public function jsonSerialize() {
-			return array_filter([
-				'if'	=>	$this->condition,
-				'then'	=>	$this->action,
-				'else'	=>	$this->elseAction
-			]);
+			if (self::isSwitchDetectionEnabled()) {
+				self::setSwitchDetectionEnabled(false);
+				$jsonArr = json_decode(json_encode($this->jsonSerialize()), true);
+
+				self::setSwitchDetectionEnabled(true);
+				$pack = self::packInwardsNestedSwitch($jsonArr);
+
+				return self::collapseInwardsSwitch($pack);
+			} else {
+				return array_filter([
+					'if'	=>	$this->condition,
+					'then'	=>	$this->action,
+					'else'	=>	$this->elseAction
+				]);
+			}
 		}
 
-		public static function getSwitchDetectionDepth(): int {
-			return self::$switchDetection;
+		public static function getSwitchDepth(): int {
+			return self::$switchDepth;
 		}
 
-		public static function setSwitchDetectionDepth(int $depth) {
-			self::$switchDetection = $depth;
+		public static function setSwitchDepth(int $depth) {
+			self::$switchDepth = $depth;
 		}
 
-		public static function resetSwitchDetectionDepth() {
-			self::setSwitchDetectionDepth(self::SWITCH_DETECTION_DEFAULT);
+		public static function resetSwitchDepth() {
+			self::setSwitchDepth(self::SWITCH_DETECTION_DEFAULT);
+		}
+
+		public static function isSwitchDetectionEnabled(): bool {
+			return self::$switchDetectionEnabled;
+		}
+
+		public static function setSwitchDetectionEnabled(bool $enabled = true) {
+			self::$switchDetectionEnabled = $enabled;
 		}
 
 		public static function unpackSwitchStatement(array $switchStatement): array {
@@ -138,6 +159,7 @@
 			}
 
 			$switchData = $switchStatement['switch'];
+			$delim = $switchStatement[self::SWITCH_CASE_DELIMITER] ?? null;
 
 			$subject = $switchData['value'];
 			$cases = $switchData['case'];
@@ -146,10 +168,19 @@
 			$recData = [];
 
 			foreach ($cases as $case => $action) {
-				$recData[] = [
-					'if'	=>	$case,
-					'then'	=>	$action
-				];
+				if ($delim && strpos($case, $delim) !== false) {
+					foreach (explode($delim, $case) as $subCase) {
+						$recData[] = [
+							'if'	=>	$subCase,
+							'then'	=>	$action
+						];
+					}
+				} else {
+					$recData[] = [
+						'if'	=>	$case,
+						'then'	=>	$action
+					];
+				}
 			}
 
 			return self::unpackSwitchRecursion($subject, array_reverse($recData), $default);
@@ -178,6 +209,122 @@
 			}
 
 			return $predicate;
+		}
+
+		protected static function packInwardsNestedSwitch(array $predicate): array {
+			return array_map(function ($val) {
+				if (is_array($val)) {
+					if (ArraySniffer::arrayConformsTo(Action::BASE_SPECIFICATION, $val)) {
+						$val = self::packInwardsNestedAction($val, function (array $nested) {
+							return self::packInwardsNestedSwitch($nested);
+						});
+					} else if (ArraySniffer::arrayConformsTo(self::SWITCH_SPECIFICATION['switch'], $val)) {
+						$val['case'] = array_map(function ($arg) {
+							return self::packInwardsNestedAction($arg, function (array $nested) {
+								return self::packInwardsNestedSwitch($nested);
+							});
+						}, $val['case']);
+					}
+				}
+
+				return $val;
+			}, self::packSwitchStatement($predicate));
+		}
+
+		protected static function packInwardsNestedAction(array $action, callable $evalFunction): array {
+			if ($action['action'] == 'EVAL') {
+				$action['arguments'] = array_map(function ($arg) use ($evalFunction) {
+					return call_user_func($evalFunction, $arg);
+				}, $action['arguments']);
+			} else if ($action['action'] == 'CHAIN') {
+				$action['arguments'] = array_map(function ($arg) use ($evalFunction) {
+					return self::packInwardsNestedAction($arg, $evalFunction);
+				}, $action['arguments']);
+			}
+
+			return $action;
+		}
+
+		protected static function collapseInwardsSwitch(array $predicate): array {
+			$collapsed = [];
+
+			foreach ($predicate as $key => $item) {
+				$delim = null;
+
+				if (in_array($key, [ 'then', 'else' ])) {
+					$item = self::packInwardsNestedAction($item, function (array $nested) {
+						return self::collapseInwardsSwitch($nested);
+					});
+				} else if ($key == 'switch') {
+					$multiCases = [];
+					$handled = [];
+
+					foreach ($item['case'] as $caseLabel => $action) {
+						$caseRegistry = [ $caseLabel ];
+
+						foreach ($item['case'] as $altCaseLabel => $altAction) {
+							if ($altCaseLabel == $caseLabel || in_array($altCaseLabel, $handled)) {
+								continue;
+							}
+
+							if ($altAction == $action) {
+								$caseRegistry[] = $altCaseLabel;
+								$handled[] = $altCaseLabel;
+							}
+						}
+
+						if (!in_array($caseLabel, $handled)) {
+							$multiCases[] = $caseRegistry;
+							$handled[] = $caseLabel;
+						}
+					}
+
+					if (count($item['case']) != count($multiCases)) {
+						$caseBook = [];
+
+						$delimChoice = '%/&#|*_:';
+						$delimCount = 2;
+						$delimIndex = 0;
+
+						$delim = str_repeat($delimChoice[$delimIndex], $delimCount);
+
+						while (array_reduce($multiCases, function (bool $foundCarry, array $cache) use ($delim) {
+							return $foundCarry || array_reduce($cache, function (bool $strPosCarry, string $caseKey) use ($delim) {
+								return $strPosCarry || strpos($caseKey, $delim) !== false;
+							}, false);
+						}, false)) {
+							$delimIndex++;
+
+							if ($delimIndex == strlen($delimChoice)) {
+								$delimIndex = 0;
+								$delimCount++;
+							}
+
+							$delim = str_repeat($delimChoice[$delimIndex], $delimCount);
+						}
+
+						foreach ($multiCases as $caseTuple) {
+							$randomCase = $caseTuple[array_rand($caseTuple)];
+							$action = $item['case'][$randomCase];
+
+							$caseBook[implode($delim, $caseTuple)] = $action;
+						}
+					} else {
+						$caseBook = $item['case'];
+					}
+
+					$item['case'] = array_map(function ($arg) {
+						return self::packInwardsNestedAction($arg, function (array $nested) {
+							return self::collapseInwardsSwitch($nested);
+						});
+					}, $caseBook);
+				}
+
+				$collapsed[$key] = $item;
+				$collapsed[self::SWITCH_CASE_DELIMITER] = $delim;
+			}
+
+			return array_filter($collapsed);
 		}
 
 		protected static function buildSwitchDescentConfig(string $subject): array {
@@ -211,11 +358,11 @@
 			}
 
 			return [
-				'switch'	=>	[
+				'switch'	=>	array_filter([
 					'value'		=>	$topLevelValue,
 					'case'		=>	self::packSwitchRecursion($stdPredicate),
 					'default'	=>	$bottomLevelAction
-				]
+				])
 			];
 		}
 
@@ -227,7 +374,7 @@
 				$object	=>	$stdPredicate['then']
 			];
 
-			$else = $stdPredicate['else'];
+			$else = $stdPredicate['else'] ?? null;
 
 			if (is_array($else) && ArraySniffer::arrayConformsTo(self::buildSwitchDescentConfig($subject), $else)) {
 				return $case + self::packSwitchRecursion($else['arguments'][0]);
@@ -237,14 +384,14 @@
 		}
 
 		public static function checkSwitchEligible(array $predicate): bool {
-			return self::checkSwitchDepth($predicate) >= self::getSwitchDetectionDepth();
+			return self::checkSwitchDepth($predicate) >= self::getSwitchDepth();
 		}
 
 		protected static function checkSwitchDepth(array $predicate): int {
 			$conforms = ArraySniffer::arrayConformsTo([
 				'if'	=>	[
-					'condition'		=>	'string::^EQUAL$',
-					'arguments{2}'	=>	'any'
+					'condition'			=>	'string::^EQUAL$',
+					'arguments{2,3}'	=>	'any'
 				],
 				'then'	=>	Action::BASE_SPECIFICATION,
 				'else?'	=>	'array::assoc'
