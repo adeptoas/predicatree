@@ -31,6 +31,10 @@
 			return [
 				'method'	=>	'string!',
 				'arguments'	=>	array_map(function (\ReflectionParameter $param) {
+					if ($param->isOptional()) {
+						return null;
+					}
+					
 					return $param->getClass()->name ?? 'any';
 				}, $reflMethod->getParameters())
 			];
