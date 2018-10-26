@@ -61,9 +61,6 @@
 	<!-- Require lower-case true, false and null -->
 	<rule ref="Generic.PHP.LowerCaseConstant" />
 
-	<!-- Require correct array bracket spacing -->
-	<rule ref="Squiz.Arrays.ArrayBracketSpacing" />
-
 	<!-- Paths to check -->
 	<file>src</file>
 </ruleset>

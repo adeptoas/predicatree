@@ -10,8 +10,15 @@
 
 		public static function build(array $data): SortProgram {
 			$apriori = $data['apriori'];
-
-			$collection = Collection::fromSpecifiedArray($data['subject']);
+			
+			if (class_exists($data['subject']['type'])) {
+				//user implemented class
+				$collection = new $data['subject']['type']();
+			} else {
+				//one of our collection classes.
+				$collection = Collection::fromSpecifiedArray($data['subject']);
+			}
+			
 			$predicates = Predicate::buildList($data['predicates']);
 
 			return new self(
@@ -21,10 +28,9 @@
 			);
 		}
 
-		/** @var Collection */
 		protected $subject;
 
-		public function __construct(Collection $collection, array $predicates, array $aprioriData = []) {
+		public function __construct($collection, array $predicates, array $aprioriData = []) {
 			parent::__construct($collection, $predicates, $aprioriData);
 		}
 

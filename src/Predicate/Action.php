@@ -10,9 +10,18 @@
 		];
 
 		public static function fromSpecifiedArray(array $data): Action {
-			$action = strtolower($data['action']);
-			$class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action';
-
+			if (class_exists($data['action'])) {
+				//user submitted own action
+				$class = $data['action'];
+				
+				if (!is_subclass_of($class, self::class)) {
+					throw new \BadMethodCallException('Action class must extend ' . self::class);
+				}
+			} else {
+				$action = strtolower($data['action']);
+				$class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action';
+			}
+			
 			$args = $data['arguments'];
 
 			return new $class(...$args);
