@@ -13,9 +13,8 @@
 			if (class_exists($data['action'])) {
 				//user submitted own action
 				$class = $data['action'];
-				$reflection = new \ReflectionClass($class);
 				
-				if ($reflection->isSubclassOf(self::class)) {
+				if (!is_subclass_of($class, self::class)) {
 					throw new \BadMethodCallException('Action class must extend ' . self::class);
 				}
 			} else {
