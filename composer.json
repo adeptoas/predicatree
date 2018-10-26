@@ -20,7 +20,8 @@
   "require": {
     "php": ">=7.0.0",
     "adeptoas/sniff-array": "^1.5",
-    "adeptoas/fancy": "^1.0"
+    "adeptoas/fancy": "^1.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.0",
