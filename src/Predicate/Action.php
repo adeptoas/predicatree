@@ -21,7 +21,7 @@
 				$action = strtolower($data['action']);
 				$class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action';
 			}
-			
+
 			$args = $data['arguments'];
 
 			return new $class(...$args);

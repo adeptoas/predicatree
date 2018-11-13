@@ -29,7 +29,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Adepto\\PredicaTree\\": "src"
+      "Adepto\\PredicaTree\\": "src",
+      "Examples\\": "Examples"
     }
   },
   "scripts": {
