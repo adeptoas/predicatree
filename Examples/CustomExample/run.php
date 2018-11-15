@@ -9,9 +9,9 @@
 	use Examples\CustomExample\DummyClasses\Apple;
 	
 	$DATA = [
-		'apriori'    => [
-			'clientshort' => 'de-kd',
-			'officeid'    => '59'
+		'apriori'   => [
+			'key'   => 'value',
+			'key'   => 'value'
 		],
 		'subject'    => [
 			'type' => DummyCollection::class
