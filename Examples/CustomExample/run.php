@@ -11,7 +11,7 @@
 	$DATA = [
 		'apriori'   => [
 			'key'   => 'value',
-			'key'   => 'value'
+			'key1'   => 'value1'
 		],
 		'subject'    => [
 			'type' => DummyCollection::class
@@ -21,8 +21,8 @@
 				'if'   => [
 					'condition' => 'EQUAL',
 					'arguments' => [
-						'::clientshort',
-						'de-kd'
+						'::key',
+						'value'
 					]
 				],
 				'then' => [
