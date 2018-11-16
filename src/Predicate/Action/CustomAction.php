@@ -28,7 +28,11 @@
 						return null;
 					}
 					
-					return $param->getClass()->name ?? 'any';
+					if ($param->getClass()) {
+						return 'class::' . $param->getClass()->name;
+					}
+					
+					return 'any';
 				}, $reflMethod->getParameters()))
 			];
 		}

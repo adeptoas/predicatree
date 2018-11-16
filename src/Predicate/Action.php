@@ -2,7 +2,8 @@
 	namespace Adepto\PredicaTree\Predicate;
 
 	use Adepto\Fancy\FancyString;
-
+	use BadFunctionCallException;
+	
 	abstract class Action extends CacheObject {
 		const BASE_SPECIFICATION = [
 			'action'	=>	'string!',
@@ -19,9 +20,12 @@
 				}
 			} else {
 				$action = strtolower($data['action']);
-				$class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action';
+				
+				if (!class_exists($class = __NAMESPACE__ . '\\Action\\' . ucfirst(FancyString::toCamelCase($action)) . 'Action')) {
+					throw new BadFunctionCallException($class . " is not an Action");
+				}
 			}
-			
+
 			$args = $data['arguments'];
 
 			return new $class(...$args);
