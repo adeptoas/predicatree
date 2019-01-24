@@ -1,0 +1,42 @@
+{
+	"apriori": {
+		"clientShort": "no-ee",
+		"ticketType": "type1"
+	},
+	"subject": {
+		"type": "Dictionary",
+		"items": []
+	},
+	"predicates": [
+		{
+			"if": {
+				"condition": "EQUAL",
+				"arguments": [
+					"::clientShort",
+					"no-ee"
+				]
+			},
+			"then": {
+				"action": "return",
+				"arguments": [
+					{}
+				]
+			}
+		},
+		{
+			"if": {
+				"condition": "EQUAL",
+				"arguments": [
+					"::clientShort",
+					"no-ska"
+				]
+			},
+			"then": {
+				"action": "return",
+				"arguments": [
+					"MultiplyPositive50"
+				]
+			}
+		}
+	]
+}
